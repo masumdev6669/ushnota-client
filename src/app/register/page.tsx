@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { toast } from "@/components/Toast";
 import { HeartHandshake } from "lucide-react";
+import { signUp } from "@/lib/auth-client";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -35,21 +36,44 @@ export default function RegisterPage() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // ১. পাসওয়ার্ড ভ্যালিডেশন
     const passError = validatePassword(form.password);
-    if (passError) {
-      return toast.error(passError);
-    }
+    if (passError) return toast.error(passError);
 
-    // ২. লোডিং শুরু
     setLoading(true);
 
-    // ৩. ডামি ডিলে (যেহেতু ডাটাবেস কানেক্ট করা নেই)
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const { error } = await signUp.email({
+        email: form.email,
+        password: form.password,
+        name: form.name,
+        image: form.photoURL || undefined,
+      });
+
+      if (error) {
+        toast.error(error.message || "Registration failed");
+        setLoading(false);
+        return;
+      }
+
+      // টোকেন নেওয়ার লজিক
+      const res = await fetch("http://localhost:8000/api/auth/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email, name: form.name }),
+      });
+
+      const tokenData = await res.json();
+      if (tokenData.token) {
+        localStorage.setItem("token", tokenData.token);
+      }
+
       toast.success("Account created successfully!");
-      router.push("/login");
-    }, 800);
+      router.push("/");
+    } catch (err) {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

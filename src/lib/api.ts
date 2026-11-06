@@ -1,31 +1,25 @@
-let cachedToken: string | null = null;
+const API_URL = "http://localhost:8000/api";
 
-export function clearToken() {
-  cachedToken = null;
-}
+export const fetchApi = async (endpoint: string, options: RequestInit = {}) => {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-export async function getToken(): Promise<string | null> {
-  if (cachedToken) return cachedToken;
-  try {
-    const res = await fetch("/api/token");
-    if (!res.ok) return null;
-    const data = await res.json();
-    cachedToken = data.token ?? null;
-    return cachedToken;
-  } catch {
-    return null;
-  }
-}
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...options.headers,
+  };
 
-export async function apiFetch(path: string, options: RequestInit = {}) {
-  const token = await getToken();
-  const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-  return fetch(`${base}${path}`, {
+  const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    },
+    headers,
   });
-}
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Something went wrong");
+  }
+
+  return data;
+};
