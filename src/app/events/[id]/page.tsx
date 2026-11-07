@@ -1,62 +1,65 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Calendar, ArrowLeft } from "lucide-react";
 import { toast } from "@/components/Toast";
-
-import img1 from "@/assets/ph_61993_242126.jpg";
-import img2 from "@/assets/ph_61993_242131.jpg";
-import img3 from "@/assets/pict_large.jpg";
+import { fetchApi } from "@/lib/api";
 
 export default function EventDetailsPage() {
   const { id } = useParams();
+  const router = useRouter();
+  const [event, setEvent] = useState<any>(null);
   const [joined, setJoined] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [joinLoading, setJoinLoading] = useState(false);
 
-  const eventsData: Record<string, any> = {
-    "1": {
-      title: "Winter Clothes Distribution - Mirpur",
-      eventType: "Donation",
-      thumbnail: img1,
-      location: "Mirpur 10, Dhaka",
-      eventDate: "2024-12-15T10:00:00.000Z",
-      description:
-        "Join us this winter as we distribute warm clothes and blankets to the underprivileged communities in Mirpur. Your small contribution can bring a smile to someone's face.",
-    },
-    "2": {
-      title: "Blanket Distribution for the Needy",
-      eventType: "Donation",
-      thumbnail: img2,
-      location: "Mohammadpur, Dhaka",
-      eventDate: "2024-12-20T09:00:00.000Z",
-      description:
-        "Help us provide warm blankets to those sleeping on the streets. We are gathering at Mohammadpur to distribute thick blankets to the homeless.",
-    },
-    "3": {
-      title: "Winter Food Drive",
-      eventType: "Food",
-      thumbnail: img3,
-      location: "Dhanmondi, Dhaka",
-      eventDate: "2024-12-25T11:00:00.000Z",
-      description:
-        "A warm meal can make a huge difference in winter. Join our food drive as we prepare and distribute hot meals to the needy in Dhanmondi.",
-    },
-  };
+  useEffect(() => {
+    const loadEvent = async () => {
+      try {
+        const data = await fetchApi(`/events/${id}`);
+        setEvent(data);
 
-  const event = eventsData[id as string] || eventsData["1"];
+        const token = localStorage.getItem("token");
+        if (token) {
+          const status = await fetchApi(`/joins/status/${id}`);
+          setJoined(status.joined);
+        }
+      } catch (error) {
+        toast.error("Failed to load event details");
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadEvent();
+  }, [id]);
 
-  const handleJoin = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+  const handleJoin = async () => {
+    if (!localStorage.getItem("token")) {
+      toast.error("Please login to join this event");
+      return router.push("/login");
+    }
+
+    setJoinLoading(true);
+    try {
+      await fetchApi(`/joins`, {
+        method: "POST",
+        body: JSON.stringify({ eventId: id }),
+      });
       setJoined(true);
       toast.success("Successfully joined the event!");
-    }, 800);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to join");
+    } finally {
+      setJoinLoading(false);
+    }
   };
+
+  if (loading)
+    return <div className="p-20 text-center">Loading details...</div>;
+  if (!event) return <div className="p-20 text-center">Event not found</div>;
 
   return (
     <section className="py-12 px-4 md:px-6 max-w-4xl mx-auto">
@@ -69,11 +72,10 @@ export default function EventDetailsPage() {
 
       <div className="bg-card border rounded-2xl overflow-hidden shadow-sm">
         <div className="relative h-64 md:h-80 w-full">
-          <Image
+          <img
             src={event.thumbnail}
             alt={event.title}
-            fill
-            className="object-cover"
+            className="object-cover w-full h-full"
           />
         </div>
 
@@ -89,10 +91,10 @@ export default function EventDetailsPage() {
             </div>
             <Button
               onClick={handleJoin}
-              disabled={joined || loading}
+              disabled={joined || joinLoading}
               className={`rounded-full px-8 py-6 text-lg font-bold ${joined ? "bg-green-600 hover:bg-green-600 text-white cursor-not-allowed" : "bg-primary hover:bg-primary/90"}`}
             >
-              {loading
+              {joinLoading
                 ? "Joining..."
                 : joined
                   ? "✅ Already Joined"

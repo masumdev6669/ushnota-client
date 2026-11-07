@@ -3,19 +3,35 @@ import Link from "next/link";
 import Image from "next/image";
 import ThemeToggle from "./ThemeToggle";
 import { Button } from "@/components/ui/button";
-import { Menu, HeartHandshake, User } from "lucide-react";
+import { Menu, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import logo from "@/assets/logo.png";
+import { useSession, signOut } from "@/lib/auth-client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuGroup,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function Navbar() {
   const router = useRouter();
-  const session = { user: null };
+  const { data: session, isPending } = useSession();
+
+  const handleLogout = async () => {
+    await signOut();
+    localStorage.removeItem("token");
+    router.push("/login");
+  };
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-8">
-        {/* Logo Section */}
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center">
           <Image
             src={logo}
             alt="Ushnota Logo"
@@ -26,7 +42,6 @@ export default function Navbar() {
           />
         </Link>
 
-        {/* Desktop Navigation Links */}
         <div className="hidden md:flex items-center gap-8">
           <Link
             href="/"
@@ -54,19 +69,70 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Right Side Icons & Buttons */}
         <div className="flex items-center gap-3">
           <ThemeToggle />
 
-          {session?.user ? (
-            <div className="flex items-center gap-2">
-              <Link href="/profile">
-                <Button variant="ghost" className="flex items-center gap-2">
-                  <User className="h-5 w-5" />
-                  Profile
-                </Button>
-              </Link>
-            </div>
+          {isPending ? (
+            <div className="h-10 w-10 animate-pulse bg-muted rounded-full"></div>
+          ) : session?.user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="cursor-pointer outline-none">
+                  <Avatar className="h-10 w-10 border-2 border-primary">
+                    <AvatarImage
+                      src={session.user.image || ""}
+                      alt={session.user.name}
+                    />
+                    <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                      {session.user.name?.charAt(0).toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent className="w-56 mt-2" align="end" forceMount>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">
+                        {session.user.name}
+                      </p>
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {session.user.email}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                </DropdownMenuGroup>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuGroup>
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={() => router.push("/events/manage")}
+                  >
+                    Manage Events
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={() => router.push("/events/joined")}
+                  >
+                    Joined Events
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuGroup>
+                  <DropdownMenuItem
+                    className="cursor-pointer text-primary font-semibold"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" /> Logout
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <div className="flex items-center gap-2">
               <Link href="/login">
@@ -85,7 +151,6 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* Mobile Menu Icon */}
           <div className="md:hidden">
             <Button variant="ghost" size="icon">
               <Menu className="h-6 w-6" />

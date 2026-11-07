@@ -14,12 +14,11 @@ import { toast } from "@/components/Toast";
 import { PlusCircle } from "lucide-react";
 
 const EVENT_TYPES = [
-  "Clothes",
-  "Blanket",
-  "Food",
-  "Medical",
-  "Education",
-  "Other",
+  "Winter Clothes Distribution",
+  "Blanket Distribution",
+  "Food Distribution",
+  "Community Meal",
+  "Winter Relief Camp",
 ];
 
 export default function CreateEventPage() {
@@ -27,7 +26,7 @@ export default function CreateEventPage() {
   const [form, setForm] = useState({
     title: "",
     description: "",
-    eventType: "Clothes",
+    eventType: "Winter Clothes Distribution",
     thumbnail: "",
     location: "",
     eventDate: "",
@@ -43,11 +42,29 @@ export default function CreateEventPage() {
 
     setLoading(true);
 
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const response = await fetch("http://localhost:8000/api/events", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(form),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to create event");
+      }
+
       toast.success("Event created successfully!");
       router.push("/events");
-    }, 800);
+    } catch (error: any) {
+      toast.error(error.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
