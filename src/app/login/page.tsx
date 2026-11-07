@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { toast } from "@/components/Toast";
 import { HeartHandshake } from "lucide-react";
+import { signIn } from "@/lib/auth-client";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,16 +25,36 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
 
-    // ডামি লগইন (পরে BetterAuth দিয়ে আপডেট হবে)
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const { error } = await signIn.email({
+        email: form.email,
+        password: form.password,
+      });
+
+      if (error) {
+        toast.error(error.message || "Invalid email or password");
+        setLoading(false);
+        return;
+      }
+
+      const res = await fetch("http://localhost:8000/api/auth/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email, name: "User" }),
+      });
+
+      const tokenData = await res.json();
+      if (tokenData.token) {
+        localStorage.setItem("token", tokenData.token);
+      }
+
       toast.success("Welcome back!");
       router.push("/");
-    }, 800);
-  };
-
-  const handleGoogleLogin = () => {
-    toast.success("Google login will be implemented soon!");
+    } catch (err) {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -94,7 +115,7 @@ export default function LoginPage() {
             type="button"
             variant="outline"
             className="w-full rounded-full"
-            onClick={handleGoogleLogin}
+            onClick={() => toast.error("Google login not setup yet")}
           >
             <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
               <path
