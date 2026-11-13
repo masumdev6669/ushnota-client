@@ -111,7 +111,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="border-t py-5 text-center text-sm text-muted-foreground">
-        © 2024 Ushnota. Built for communities that look after each other.
+        © 2026 Ushnota. Built for communities that look after each other.
       </div>
     </footer>
   );

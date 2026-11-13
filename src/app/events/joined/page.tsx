@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,29 +11,35 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Calendar } from "lucide-react";
-
-const joinedEvents = [
-  {
-    _id: "2",
-    title: "Blanket Distribution for the Needy",
-    eventType: "Blanket",
-    thumbnail:
-      "https://images.unsplash.com/photo-1615461066159-fea0960485d5?w=600&q=80",
-    location: "Mohammadpur, Dhaka",
-    eventDate: "2024-12-20T09:00:00.000Z",
-  },
-  {
-    _id: "3",
-    title: "Winter Food Drive",
-    eventType: "Food",
-    thumbnail:
-      "https://images.unsplash.com/photo-1593113598332-cd288d649433?w=600&q=80",
-    location: "Dhanmondi, Dhaka",
-    eventDate: "2024-12-25T11:00:00.000Z",
-  },
-];
+import { fetchApi } from "@/lib/api";
+import { toast } from "@/components/Toast";
 
 export default function JoinedEventsPage() {
+  const [events, setEvents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadJoinedEvents = async () => {
+      try {
+        const data = await fetchApi("/joins/mine");
+        setEvents(data);
+      } catch (error: any) {
+        toast.error(error.message || "Failed to load joined events");
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadJoinedEvents();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="p-20 text-center text-xl font-semibold">
+        Loading joined events...
+      </div>
+    );
+  }
+
   return (
     <section className="py-12 px-6 max-w-6xl mx-auto">
       <div className="text-center mb-10">
@@ -42,7 +49,7 @@ export default function JoinedEventsPage() {
         </p>
       </div>
 
-      {joinedEvents.length === 0 ? (
+      {events.length === 0 ? (
         <div className="text-center py-20 border-2 border-dashed rounded-2xl">
           <h3 className="text-lg font-semibold text-muted-foreground">
             No joined events
@@ -51,12 +58,12 @@ export default function JoinedEventsPage() {
             Explore events and join a cause.
           </p>
           <Link href="/events">
-            <Button className="bg-primary">Explore Events</Button>
+            <Button className="bg-primary rounded-full">Explore Events</Button>
           </Link>
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {joinedEvents.map((event) => (
+          {events.map((event) => (
             <Card
               key={event._id}
               className="overflow-hidden card-hover flex flex-col"

@@ -35,8 +35,8 @@ export default function Navbar() {
           <Image
             src={logo}
             alt="Ushnota Logo"
-            width={120}
-            height={80}
+            width={160}
+            height={160}
             className="object-contain"
             priority
           />

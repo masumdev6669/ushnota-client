@@ -5,6 +5,7 @@ import ThemeProvider from "@/components/ThemeProvider";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ToastContainer from "@/components/Toast";
+import TokenProvider from "@/components/TokenProvider";
 
 const font = Bricolage_Grotesque({ subsets: ["latin"] });
 
@@ -25,6 +26,7 @@ export default function RootLayout({
         className={`${font.className} flex min-h-screen flex-col antialiased`}
       >
         <ThemeProvider>
+          <TokenProvider />
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />

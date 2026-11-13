@@ -26,7 +26,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const { error } = await signIn.email({
+      const { data, error } = await signIn.email({
         email: form.email,
         password: form.password,
       });
@@ -37,10 +37,12 @@ export default function LoginPage() {
         return;
       }
 
+      const name = data?.user?.name || "User";
+
       const res = await fetch("http://localhost:8000/api/auth/token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: form.email, name: "User" }),
+        body: JSON.stringify({ email: form.email, name }),
       });
 
       const tokenData = await res.json();
@@ -54,6 +56,17 @@ export default function LoginPage() {
       toast.error("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      await signIn.social({
+        provider: "google",
+        callbackURL: "http://localhost:3000",
+      });
+    } catch (error) {
+      toast.error("Google login failed. Please try again.");
     }
   };
 
@@ -115,7 +128,7 @@ export default function LoginPage() {
             type="button"
             variant="outline"
             className="w-full rounded-full"
-            onClick={() => toast.error("Google login not setup yet")}
+            onClick={handleGoogleLogin}
           >
             <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
               <path

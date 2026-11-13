@@ -7,11 +7,8 @@
   --color-card-foreground: hsl(0 0% 3.9%);
   --color-popover: hsl(0 0% 100%);
   --color-popover-foreground: hsl(0 0% 3.9%);
-
-  /* Ushnota Primary Color (Blue) */
   --color-primary: #0284c7;
   --color-primary-foreground: hsl(0 0% 100%);
-
   --color-secondary: hsl(0 0% 96.1%);
   --color-secondary-foreground: hsl(0 0% 9%);
   --color-muted: hsl(0 0% 96.1%);
@@ -27,27 +24,25 @@
 }
 
 .dark {
-  --color-background: hsl(0 0% 3.9%);
-  --color-foreground: hsl(0 0% 98%);
-  --color-card: hsl(0 0% 3.9%);
-  --color-card-foreground: hsl(0 0% 98%);
-  --color-popover: hsl(0 0% 3.9%);
-  --color-popover-foreground: hsl(0 0% 98%);
-
-  --color-primary: #0284c7;
-  --color-primary-foreground: hsl(0 0% 100%);
-
-  --color-secondary: hsl(0 0% 14.9%);
-  --color-secondary-foreground: hsl(0 0% 98%);
-  --color-muted: hsl(0 0% 14.9%);
-  --color-muted-foreground: hsl(0 0% 63.9%);
-  --color-accent: hsl(0 0% 14.9%);
-  --color-accent-foreground: hsl(0 0% 98%);
+  --color-background: hsl(224 71.4% 4.1%);
+  --color-foreground: hsl(210 20% 98%);
+  --color-card: hsl(224 71.4% 4.1%);
+  --color-card-foreground: hsl(210 20% 98%);
+  --color-popover: hsl(224 71.4% 4.1%);
+  --color-popover-foreground: hsl(210 20% 98%);
+  --color-primary: #0ea5e9;
+  --color-primary-foreground: hsl(210 20% 98%);
+  --color-secondary: hsl(215 27.9% 16.9%);
+  --color-secondary-foreground: hsl(210 20% 98%);
+  --color-muted: hsl(215 27.9% 16.9%);
+  --color-muted-foreground: hsl(217.9 10.6% 64.9%);
+  --color-accent: hsl(215 27.9% 16.9%);
+  --color-accent-foreground: hsl(210 20% 98%);
   --color-destructive: hsl(0 62.8% 30.6%);
-  --color-destructive-foreground: hsl(0 0% 98%);
-  --color-border: hsl(0 0% 14.9%);
-  --color-input: hsl(0 0% 14.9%);
-  --color-ring: #0284c7;
+  --color-destructive-foreground: hsl(210 20% 98%);
+  --color-border: hsl(215 27.9% 16.9%);
+  --color-input: hsl(215 27.9% 16.9%);
+  --color-ring: #0ea5e9;
 }
 
 @layer base {
@@ -58,4 +53,12 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
   }
+}
+
+.card-hover {
+  transition: all 0.3s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
 }

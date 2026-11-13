@@ -156,13 +156,15 @@ export default function HomePage() {
               {events.map((e) => (
                 <div
                   key={e._id}
-                  className="rounded-2xl border bg-card shadow-sm card-hover overflow-hidden flex flex-col"
+                  className="rounded-2xl border bg-card shadow-sm card-hover overflow-hidden flex flex-col group"
                 >
-                  <img
-                    src={e.thumbnail}
-                    alt={e.title}
-                    className="h-48 w-full object-cover"
-                  />
+                  <div className="overflow-hidden relative h-48 w-full">
+                    <img
+                      src={e.thumbnail}
+                      alt={e.title}
+                      className="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
+                    />
+                  </div>
                   <div className="p-5 flex flex-col flex-grow">
                     <h3 className="font-bold text-lg mb-2 line-clamp-1">
                       {e.title}
@@ -202,13 +204,13 @@ export default function HomePage() {
             {gallery.map((imgSrc, i) => (
               <div
                 key={i}
-                className="relative h-48 w-full rounded-xl overflow-hidden card-hover shadow-sm"
+                className="relative h-48 w-full rounded-xl overflow-hidden shadow-sm group"
               >
                 <Image
                   src={imgSrc}
                   alt={`Gallery ${i + 1}`}
                   fill
-                  className="object-cover"
+                  className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
                 />
               </div>
             ))}

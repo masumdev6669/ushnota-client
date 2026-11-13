@@ -74,13 +74,13 @@ export default function EventsPage() {
           {events.map((event) => (
             <Card
               key={event._id}
-              className="overflow-hidden card-hover flex flex-col"
+              className="overflow-hidden card-hover flex flex-col group"
             >
-              <div className="relative h-48 w-full">
+              <div className="relative h-48 w-full overflow-hidden">
                 <img
                   src={event.thumbnail}
                   alt={event.title}
-                  className="object-cover w-full h-full"
+                  className="object-cover w-full h-full transition-transform duration-500 ease-in-out group-hover:scale-110"
                 />
               </div>
               <CardHeader className="p-5 pb-2">
