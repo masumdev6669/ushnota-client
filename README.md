@@ -2,7 +2,7 @@
 
 Ushnota is a community-driven event management platform where users can create, join, and track winter relief events (like blanket and clothes distribution) in their local area.
 
-**Live Site URL:** [https://your-vercel-app.vercel.app](https://your-vercel-app.vercel.app)
+**Live Site URL:** [https://ushnota-client.vercel.app](https://ushnota-client.vercel.app)
 
 ## Features
 
