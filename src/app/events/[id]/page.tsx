@@ -1,16 +1,15 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Calendar, ArrowLeft } from "lucide-react";
 import { toast } from "@/components/Toast";
 import { fetchApi } from "@/lib/api";
 
-export default function EventDetailsPage() {
+function EventDetailsContent() {
   const { id } = useParams();
-  const router = useRouter();
   const [event, setEvent] = useState<any>(null);
   const [joined, setJoined] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -39,7 +38,7 @@ export default function EventDetailsPage() {
   const handleJoin = async () => {
     if (!localStorage.getItem("token")) {
       toast.error("Please login to join this event");
-      return router.push("/login");
+      return;
     }
 
     setJoinLoading(true);
@@ -121,5 +120,13 @@ export default function EventDetailsPage() {
         </div>
       </div>
     </section>
+  );
+}
+
+export default function EventDetailsPage() {
+  return (
+    <Suspense fallback={<div className="p-20 text-center">Loading...</div>}>
+      <EventDetailsContent />
+    </Suspense>
   );
 }

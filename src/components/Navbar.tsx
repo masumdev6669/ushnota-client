@@ -35,8 +35,8 @@ export default function Navbar() {
           <Image
             src={logo}
             alt="Ushnota Logo"
-            width={160}
-            height={160}
+            width={120}
+            height={80}
             className="object-contain"
             priority
           />
@@ -76,7 +76,7 @@ export default function Navbar() {
             <div className="h-10 w-10 animate-pulse bg-muted rounded-full"></div>
           ) : session?.user ? (
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+              <DropdownMenuTrigger>
                 <div className="cursor-pointer outline-none">
                   <Avatar className="h-10 w-10 border-2 border-primary">
                     <AvatarImage
@@ -90,7 +90,7 @@ export default function Navbar() {
                 </div>
               </DropdownMenuTrigger>
 
-              <DropdownMenuContent className="w-56 mt-2" align="end" forceMount>
+              <DropdownMenuContent className="w-56 mt-2" align="end">
                 <DropdownMenuGroup>
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
