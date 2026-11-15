@@ -9,7 +9,10 @@ export default function TokenProvider() {
     const fetchToken = async () => {
       if (session?.user && !localStorage.getItem("token")) {
         try {
-          const res = await fetch("http://localhost:8000/api/auth/token", {
+          const baseUrl =
+            process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+          const res = await fetch(`${baseUrl}/api/auth/token`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -17,6 +20,7 @@ export default function TokenProvider() {
               name: session.user.name,
             }),
           });
+
           const data = await res.json();
           if (data.token) {
             localStorage.setItem("token", data.token);

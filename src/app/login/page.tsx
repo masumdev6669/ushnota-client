@@ -38,8 +38,10 @@ export default function LoginPage() {
       }
 
       const name = data?.user?.name || "User";
+      const baseUrl =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-      const res = await fetch("http://localhost:8000/api/auth/token", {
+      const res = await fetch(`${baseUrl}/api/auth/token`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: form.email, name }),
@@ -63,7 +65,7 @@ export default function LoginPage() {
     try {
       await signIn.social({
         provider: "google",
-        callbackURL: "http://localhost:3000",
+        callbackURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
       });
     } catch (error) {
       toast.error("Google login failed. Please try again.");
